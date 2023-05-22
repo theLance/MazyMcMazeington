@@ -49,3 +49,10 @@ struct Coordinates : Dimensions {
         return {x+1, y+1};
     }
 };
+
+typedef Coordinates (Coordinates::*CoordFunc)() const;
+
+std::ostream& operator<<(std::ostream& os, const Coordinates& coord) {
+    os << "[" << coord.x << "-" << coord.y << "]";
+    return os;
+}
