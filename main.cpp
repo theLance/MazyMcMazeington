@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
     mc.create();
 
     // TODO: make if(..) check before sending code
+    std::cout << mc.result() << std::endl;
     std::cout << std::boolalpha << validate::output::maze(mc.result()) << std::endl;
 
     std::cout << mc.result();

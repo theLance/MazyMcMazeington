@@ -21,9 +21,9 @@ public:
     void create() {
         fillBorders();
         drawPaths();
-        // complete missing paths here? (there may be 2x2 wall candidate clusters)
-        dropEndpoints();
         flip();
+        closeGaps();
+        dropEndpoints();
         std::cout << std::endl << theMaze;
     }
 
@@ -145,6 +145,32 @@ private:
                     << coord << std::endl;
             }
         });
+    }
+
+    /**
+     * Certain wall pieces would just be dangling without connection. This function is meant
+     * to attach these to nearby walls.
+    */
+    void closeGaps() {
+        std::vector<CoordFunc> directionFunctions = {Coordinates::n, Coordinates::nw, Coordinates::ne,
+                                                     Coordinates::s, Coordinates::sw, Coordinates::se,
+                                                     Coordinates::w, Coordinates::e};
+
+        bool stillFoundGap = false;
+        do {
+            stillFoundGap = false;
+            forInnerBb([&](const Coordinates& coord) {
+                unsigned int pathTileCount = 0;
+                for(auto func : directionFunctions) {
+                    pathTileCount += (theMaze[(coord.*func)()] == EMPTY);
+                }
+                if(theMaze[coord] == WALL && pathTileCount == 8) {
+                    stillFoundGap = true;
+                    // close a random direction
+                    theMaze[(coord.*directionFunctions[theRand.pickRandomFrom(8)])()] = WALL;
+                }
+            });
+        } while(stillFoundGap);
     }
 
     /**
