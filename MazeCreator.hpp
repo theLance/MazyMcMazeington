@@ -81,11 +81,11 @@ private:
         std::set<Coordinates> nextBatch;
         std::set<Coordinates> toRemove;
         do {
-            bool emergencyProtocol =
+
+            bool emergencyProtocol =   // the normal rules do not allow us to complete the maze
                 std::all_of(activeEndPoints.begin(), activeEndPoints.end(),
                             [this](const Coordinates& c) { return countSurroundingPaths(c) == 2; });
             for(const auto& coord : activeEndPoints) {
-                std::cout << coord.x << "-" << coord.y << std::endl;
                 bool nViable = isTileViableCandidateForPath(coord.n());
                 bool wViable = isTileViableCandidateForPath(coord.w());
                 bool sViable = isTileViableCandidateForPath(coord.s());
@@ -115,7 +115,6 @@ private:
                     nextBatch.insert(coord.e());
                 }
             }
-            std::cout << theMaze;
             for(const auto& elem : toRemove) {
                 activeEndPoints.erase(elem);
             }
@@ -125,12 +124,27 @@ private:
         } while(activeEndPoints.size());
     }
 
-    void forInnerBb(std::function<void(unsigned,unsigned)> func) {
+    void forInnerBb(std::function<void(const Coordinates&)> func) {
         for(unsigned y = theInnerBb.tl.y; y <= theInnerBb.br.y; ++y) {
             for(unsigned x = theInnerBb.tl.x; x <= theInnerBb.br.x; ++x) {
-                func(x,y);
+                func({x,y});
             }
         }
+    }
+
+    /// Since we drew the path first, change that to empty and make the walls where there is nothing.
+    void flip() {
+        forInnerBb([&](const Coordinates& coord){
+            auto& curr = theMaze[coord];
+            if(curr == PATH) {
+                curr = EMPTY;
+            } else if(curr == EMPTY) {
+                curr = WALL;
+            } else {
+                utils::errorMsg("Unexpected tile ") << curr << " at "
+                    << coord << std::endl;
+            }
+        });
     }
 
     /**
@@ -142,23 +156,15 @@ private:
      *       specs based on general knowledge. I hope you'll let me know :)
      */
     void dropEndpoints() {
-        // on PATH
-    }
-
-    void flip() {
-        forInnerBb([&](unsigned x, unsigned y){
-            auto& curr = theMaze[{x,y}];
-            if(curr == PATH) {
-                curr = EMPTY;
-            } else if( curr == EMPTY) {
-                curr = WALL;
-            } else {
-                utils::errorMsg("Unexpected tile ") << curr << " at "
-                    << x << "-" << y << std::endl;
+        Coordinates coord;
+        for(auto type : {BEGIN, END}) {
+            do {
+                coord = theRand.getRandomCoordinate();
             }
-        });
+            while(theMaze[coord] != EMPTY);
+            theMaze[coord] = type;
+        }
     }
-
 
     Dimensions theDims;
     BoundingBox theInnerBb;
