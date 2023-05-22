@@ -30,7 +30,6 @@ public:
         flip();
         closeGaps();
         dropEndpoints();
-        std::cout << std::endl << theMaze;
     }
 
     const Maze& result() const {
