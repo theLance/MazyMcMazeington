@@ -128,10 +128,26 @@ Result dimensionTests()  {
     return Result::OK;
 }
 
+Result runTenMazes() {
+    for(int i = 0; i < 10; ++i) {
+        MazeCreator mc({20,20});
+        mc.create();
+        if(output::noFreeClusters(mc.result()) == Result::NOK) {
+            utils::errorMsg("Large free cluster in map!") << std::endl << mc.result();
+            return Result::NOK;
+        }
+        if(output::fullyTraversable(mc) == Result::NOK) {
+            utils::errorMsg("Maze not fully traversible!") << std::endl << mc.result();
+            return Result::NOK;
+        }
+    }
+    return Result::OK;
+}
+
 
 
 Result tests() {
-    return Result(dimensionTests() | commandLineArgs() | subsequentRandomization() | randDistribution());
+    return Result(dimensionTests() | commandLineArgs() | runTenMazes() | subsequentRandomization() | randDistribution());
 }
 }
 
