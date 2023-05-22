@@ -9,9 +9,11 @@
 #include "Utils.hpp"
 #include "Validators.hpp"
 
+
 namespace validate::output {
-extern Result fullyTraversable(const Maze& maze);
+    struct ValidationAssistant;
 }
+
 
 class MazeCreator {
 public:
@@ -197,5 +199,5 @@ private:
     Maze theMaze;
     RandomCoordinateGenerator theRand;
 
-    friend validate::Result validate::output::fullyTraversable(const Maze& maze);
+    friend struct validate::output::ValidationAssistant;
 };

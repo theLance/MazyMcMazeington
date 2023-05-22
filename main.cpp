@@ -43,6 +43,10 @@ int main(int argc, char** argv) {
         utils::errorMsg("Large free cluster in map!") << std::endl << mc.result();
         return 1;
     }
+    if(validate::output::fullyTraversable(mc) == validate::Result::NOK) {
+        utils::errorMsg("Maze not fully traversible!") << std::endl << mc.result();
+        return 1;
+    }
     std::cout << mc.result();
 
     return 0;

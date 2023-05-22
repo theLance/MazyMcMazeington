@@ -72,24 +72,64 @@ namespace output {
         return Result::OK;
     }
 
+    struct ValidationAssistant {
+        ValidationAssistant(MazeCreator mc) : ref(mc) {}
+
+        auto forInnerBb(std::function<void(const Coordinates& c)> func) { return ref.forInnerBb(func); }
+        Maze& maze() { return ref.theMaze; }
+        RandomCoordinateGenerator& rand() { return ref.theRand; }
+
+        MazeCreator ref;
+    };
+
     // Using the creator to utilize some functionalities that make traversal easier
     Result fullyTraversable(MazeCreator& mc) {
-        // copy before modification
+        ValidationAssistant mca(mc);
 
-        // mc.forInnerBb([&mc](const Coordinates& c) {
-        //     auto& tile = mc.theMaze[c];
-        //     if(tile == BEGIN || tile == END) {
-        //         tile = EMPTY;
-        //     }
-        // });
+        mca.forInnerBb([&mca](const Coordinates& c) {
+            auto& tile = mca.maze()[c];
+            if(tile == BEGIN || tile == END) {
+                tile = EMPTY;
+            }
+        });
 
-        // auto start = mc.theRand.getRandomCoordinate();
-        // while(mc.theMaze[start] != EMPTY) {
-        //     mc.theRand.getRandomCoordinate();
-        // }
+        auto start = mca.rand().getRandomCoordinate();
+        while(mca.maze()[start] != EMPTY) {
+            start = mca.rand().getRandomCoordinate();
+        }
 
         std::set<Coordinates> activeSeekers;
+        std::set<Coordinates> inactiveSeekers;
+        activeSeekers.insert(start);
+        while(activeSeekers.size()) {
+            for(auto seeker : activeSeekers) {
+                for(auto func : seeker.directionFunctions) {
+                    auto neighbor = (seeker.*func)();
+                    if(mca.maze()[neighbor] == EMPTY) {
+                        mca.maze()[neighbor] = PATH;
+                        activeSeekers.insert(neighbor);
+                    }
+                    inactiveSeekers.insert(seeker);
+                }
+            }
+            for(auto rem : inactiveSeekers) {
+                activeSeekers.erase(rem);
+            }
+            inactiveSeekers.clear();
+        }
 
+        bool emptyTileFound = false;
+        mca.forInnerBb([&](const Coordinates& c){
+            if(mca.maze()[c] == EMPTY) {
+                emptyTileFound = true;
+                utils::errorMsg("Non-traverable tile found at ") << c << std::endl;
+            }
+        });
+
+        if(emptyTileFound) {
+            std::cout << mca.maze() << std::endl;
+            return Result::NOK;
+        }
         return Result::OK;
     }
 }
