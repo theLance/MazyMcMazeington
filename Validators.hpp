@@ -46,16 +46,16 @@ namespace input {
 
 namespace output {
     /// Check whether there are no 2x2 space tile clusters.
-    bool maze(const Maze& maze) {
+    Result noFreeClusters(const Maze& maze) {
         for(unsigned int y = 1; y < maze.array.size() - 2; ++y) {
             for(unsigned int x = 1; x < maze.array[y].size() - 2; ++x) {
                 if(maze.array[y][x] == ' '   && maze.array[y][x+1] == ' ' &&
                    maze.array[y+1][x] == ' ' && maze.array[y+1][x+1] == ' ') {
-                    return false;
+                    return Result::NOK;
                 }
             }
         }
-        return true;
+        return Result::OK;
     }
 }
 }

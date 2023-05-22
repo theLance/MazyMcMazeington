@@ -39,10 +39,10 @@ int main(int argc, char** argv) {
     MazeCreator mc(std::move(dims));
     mc.create();
 
-    // TODO: make if(..) check before sending code
-    std::cout << mc.result() << std::endl;
-    std::cout << std::boolalpha << validate::output::maze(mc.result()) << std::endl;
-
+    if(validate::output::noFreeClusters(mc.result()) == validate::Result::NOK) {
+        utils::errorMsg("Large free cluster in map!") << std::endl << mc.result();
+        return 1;
+    }
     std::cout << mc.result();
 
     return 0;
