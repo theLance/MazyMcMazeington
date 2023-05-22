@@ -29,15 +29,6 @@ struct Maze {
     std::vector<std::vector<char>> array;
 };
 
-std::ostream& operator<<(std::ostream& os, const Maze& maze) {
-    for(const auto& line : maze.array) {
-        for(char c : line) {
-            os << c;
-        }
-        os << std::endl;
-    }
-    return os;
-}
 
 struct BoundingBox {
     Coordinates tl;

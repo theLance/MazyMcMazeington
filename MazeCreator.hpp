@@ -7,13 +7,17 @@
 #include "Maze.hpp"
 #include "RandomGenerator.hpp"
 #include "Utils.hpp"
+#include "Validators.hpp"
 
+namespace validate::output {
+extern Result fullyTraversable(const Maze& maze);
+}
 
 class MazeCreator {
 public:
     MazeCreator(Dimensions&& dims)
             : theDims(std::move(dims))
-            , theInnerBb{ 1,1, theDims.x - 2, theDims.y - 2 }
+            , theInnerBb{ {1,1}, {theDims.x - 2, theDims.y - 2} }
             , theMaze(dims)
             , theRand(theInnerBb) {
     }
@@ -152,22 +156,18 @@ private:
      * to attach these to nearby walls.
     */
     void closeGaps() {
-        std::vector<CoordFunc> directionFunctions = {Coordinates::n, Coordinates::nw, Coordinates::ne,
-                                                     Coordinates::s, Coordinates::sw, Coordinates::se,
-                                                     Coordinates::w, Coordinates::e};
-
         bool stillFoundGap = false;
         do {
             stillFoundGap = false;
             forInnerBb([&](const Coordinates& coord) {
                 unsigned int pathTileCount = 0;
-                for(auto func : directionFunctions) {
+                for(auto func : coord.directionFunctions) {
                     pathTileCount += (theMaze[(coord.*func)()] == EMPTY);
                 }
                 if(theMaze[coord] == WALL && pathTileCount == 8) {
                     stillFoundGap = true;
                     // close a random direction
-                    theMaze[(coord.*directionFunctions[theRand.pickRandomFrom(8)])()] = WALL;
+                    theMaze[(coord.*(coord.directionFunctions)[theRand.pickRandomFrom(8)])()] = WALL;
                 }
             });
         } while(stillFoundGap);
@@ -196,9 +196,6 @@ private:
     BoundingBox theInnerBb;
     Maze theMaze;
     RandomCoordinateGenerator theRand;
-};
 
-std::ostream& operator<<(std::ostream& os, const MazeCreator& mc) {
-    os << mc.result();
-    return os;
-}
+    friend validate::Result validate::output::fullyTraversable(const Maze& maze);
+};

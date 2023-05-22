@@ -10,11 +10,7 @@
 #include <numeric>
 #include <set>
 #include <thread>
-#include <tuple>
 
-bool operator<(const Coordinates& a, const Coordinates& b) {
-    return std::tie(a.x, a.y) < std::tie(b.x, b.y);
-}
 
 namespace validate {
 Result randDistribution() {
