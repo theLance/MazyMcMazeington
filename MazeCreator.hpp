@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <set>
 
 #include "Maze.hpp"
@@ -46,7 +47,6 @@ private:
      *   xx <- yes   no -> x x      x: taken  o: candidate
      *   xo                xox
      *                     x x
-     *
      */
     bool wouldNotCompleteSquare(const Coordinates& coord) const {
         return     not (theMaze[coord.n()] == PATH && theMaze[coord.w()] == PATH && theMaze[coord.nw()] == PATH)
@@ -125,6 +125,14 @@ private:
         } while(activeEndPoints.size());
     }
 
+    void forInnerBb(std::function<void(unsigned,unsigned)> func) {
+        for(unsigned y = theInnerBb.tl.y; y <= theInnerBb.br.y; ++y) {
+            for(unsigned x = theInnerBb.tl.x; x <= theInnerBb.br.x; ++x) {
+                func(x,y);
+            }
+        }
+    }
+
     /**
      * Place end and begin points randomly.
      *
@@ -138,19 +146,17 @@ private:
     }
 
     void flip() {
-        for(unsigned y = theInnerBb.tl.y; y <= theInnerBb.br.y; ++y) {
-            for(unsigned x = theInnerBb.tl.x; x <= theInnerBb.br.x; ++x) {
-                auto& curr = theMaze[{x,y}];
-                if(curr == PATH) {
-                    curr = EMPTY;
-                } else if( curr == EMPTY) {
-                    curr = WALL;
-                } else {
-                    utils::errorMsg("Unexpected tile ") << curr << " at "
-                        << x << "-" << y << std::endl;
-                }
+        forInnerBb([&](unsigned x, unsigned y){
+            auto& curr = theMaze[{x,y}];
+            if(curr == PATH) {
+                curr = EMPTY;
+            } else if( curr == EMPTY) {
+                curr = WALL;
+            } else {
+                utils::errorMsg("Unexpected tile ") << curr << " at "
+                    << x << "-" << y << std::endl;
             }
-        }
+        });
     }
 
 
