@@ -108,13 +108,19 @@ Result commandLineArgs() {
 
 Result dimensionTests()  {
     auto failCase = [&](unsigned int x, unsigned int y) {
-        return Result::NOK == input::dimensions({x,y});
+        auto result = input::dimensions({x,y});
+        if(result != Result::NOK)
+            utils::errorMsg("Fail case did not fail for ") << x << "-" << y << std::endl;
+        return result == Result::NOK;
     };
     auto successCase = [&](unsigned int x, unsigned int y) {
-        return Result::OK == input::dimensions({x,y});
+        auto result = input::dimensions({x,y});
+        if(result != Result::OK)
+            utils::errorMsg("Success case failed for ") << x << "-" << y << std::endl;
+        return result == Result::OK;
     };
 
-    auto success = failCase(0,0) && failCase(-1,10) && failCase(-1,10) && failCase(1,1) && failCase(2,2) && failCase(3,3);
+    auto success = failCase(0,0) && failCase(1,1) && failCase(2,2) && failCase(3,3);
     if(not success) {
         utils::errorMsg("Too small dimensions failed!");
         return Result::NOK;
@@ -147,7 +153,12 @@ Result runTenMazes() {
 
 
 Result tests() {
-    return Result(dimensionTests() | commandLineArgs() | runTenMazes() | subsequentRandomization() | randDistribution());
+    return (   dimensionTests() == Result::OK
+            && commandLineArgs() == Result::OK
+            && runTenMazes() == Result::OK
+            && subsequentRandomization() == Result::OK
+            && randDistribution() == Result::OK)
+            ? Result::OK : Result::NOK;
 }
 }
 

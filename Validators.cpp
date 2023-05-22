@@ -36,6 +36,9 @@ namespace input {
 
     namespace {
     unsigned int mazeArea(const Dimensions& dims) {
+        if(dims.x < 2 || dims.y < 2) {
+            return 0;
+        }
         return (dims.x - 2) * (dims.y - 2);
     }
     }
