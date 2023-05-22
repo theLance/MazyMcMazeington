@@ -23,7 +23,10 @@ public:
 
     bool coinFlip() {
         return pathChoice(gen) % 2;
-        //return pathChoice(gen) == 0;
+    }
+
+    unsigned pickRandomFrom(unsigned int number) {
+        return std::uniform_int_distribution<unsigned int>(0, number - 1)(gen);
     }
 
 private:
