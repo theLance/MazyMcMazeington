@@ -103,17 +103,26 @@ private:
                 if(countSurroundingPaths(coord) == 2 && not emergencyProtocol) {
                     continue;
                 }
+
+                // This should probably be in random order instead
                 if(nViable && theRand.coinFlip()) {
                     theMaze[coord.n()] = PATH;
                     nextBatch.insert(coord.n());
+                    // we have to re-evaluate downstream every time there's an insert
+                    wViable = isTileViableCandidateForPath(coord.w());
+                    sViable = isTileViableCandidateForPath(coord.s());
+                    eViable = isTileViableCandidateForPath(coord.e());
                 }
                 if(wViable && theRand.coinFlip()) {
                     theMaze[coord.w()] = PATH;
                     nextBatch.insert(coord.w());
+                    sViable = isTileViableCandidateForPath(coord.s());
+                    eViable = isTileViableCandidateForPath(coord.e());
                 }
                 if(sViable && theRand.coinFlip()) {
                     theMaze[coord.s()] = PATH;
                     nextBatch.insert(coord.s());
+                    eViable = isTileViableCandidateForPath(coord.e());
                 }
                 if(eViable && theRand.coinFlip()) {
                     theMaze[coord.e()] = PATH;

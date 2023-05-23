@@ -29,9 +29,9 @@ int main(int argc, char** argv) {
 
     // Dimensions dims{x, y};
 
-    //if(validate::tests() == validate::Result::NOK)
+    if(validate::tests() == validate::Result::NOK)
     {
-        //return -1;
+        return -1;
     }
 
     Dimensions dims{16,16};

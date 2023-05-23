@@ -92,6 +92,7 @@ Result subsequentRandomization()     {
 }
 
 Result commandLineArgs() {
+    std::cout << "Testing cmd line args (ignore subsequent error msgs)\n";
     if(not input::commandLineArguments(1) && not input::commandLineArguments(2) &
        not input::commandLineArguments(4) && not input::commandLineArguments(5)) {
         utils::errorMsg("cmd validator error for error cases!");
@@ -103,10 +104,12 @@ Result commandLineArgs() {
         return Result::NOK;
     }
 
+    std::cout << "Done!" << std::endl;
     return Result::OK;
 }
 
 Result dimensionTests()  {
+    std::cout << "Testing dimensions checker (ignore subsequent error msgs)\n";
     auto failCase = [&](unsigned int x, unsigned int y) {
         auto result = input::dimensions({x,y});
         if(result != Result::NOK)
@@ -131,11 +134,15 @@ Result dimensionTests()  {
         utils::errorMsg("Dimensions success cases failed!");
         return Result::NOK;
     }
+
+    std::cout << "Done!" << std::endl;
     return Result::OK;
 }
 
-Result runTenMazes() {
-    for(int i = 0; i < 10; ++i) {
+Result runOneHundredMazes() {
+    std::cout << "Running 100 mazes...";
+    for(int i = 0; i < 100; ++i) {
+        std::cout << (i+1) << "...";
         MazeCreator mc({20,20});
         mc.create();
         if(output::noFreeClusters(mc.result()) == Result::NOK) {
@@ -147,15 +154,15 @@ Result runTenMazes() {
             return Result::NOK;
         }
     }
+    std::cout << "Done!" << std::endl;
     return Result::OK;
 }
-
 
 
 Result tests() {
     return (   dimensionTests() == Result::OK
             && commandLineArgs() == Result::OK
-            && runTenMazes() == Result::OK
+            && runOneHundredMazes() == Result::OK
             && subsequentRandomization() == Result::OK
             && randDistribution() == Result::OK)
             ? Result::OK : Result::NOK;
