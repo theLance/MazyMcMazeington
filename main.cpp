@@ -17,22 +17,25 @@ int yFromArgs(char** argv) {
 }
 
 int main(int argc, char** argv) {
-    if(validate::input::commandLineArguments(argc) == Result::NOK) {
+    if(validate::input::commandLineArguments(argc) == validate::Result::NOK) {
         return 1;
     }
 
     int x = xFromArgs(argv);
     int y = yFromArgs(argv);
-    if(validate::input::widthHeightMinimum(x, y)) {
+    if(validate::input::widthHeightMinimum(x, y) == validate::Result::NOK) {
         return 1;
     }
 
-    Dimensions dims{x, y};
+    // since input has been validated to be larger than 0, this cast is safe
+    Dimensions dims{static_cast<unsigned int>(x), static_cast<unsigned int>(y)};
 
     if(validate::tests() == validate::Result::NOK)
     {
         return -1;
     }
+
+    std::cout << std::endl << "Generating " << x << "x" << y << " maze" << std::endl;
 
     MazeCreator mc(std::move(dims));
     mc.create();
