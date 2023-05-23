@@ -17,24 +17,22 @@ int yFromArgs(char** argv) {
 }
 
 int main(int argc, char** argv) {
-    // if(validate::input::commandLineArguments(argc) = Result::NOK) {
-    //     return 1;
-    // }
+    if(validate::input::commandLineArguments(argc) == Result::NOK) {
+        return 1;
+    }
 
-    // int x = xFromArgs(argv);
-    // int y = yFromArgs(argv);
-    // if(validate::input::widthHeightMinimum(x, y)) {
-    //     return 1;
-    // }
+    int x = xFromArgs(argv);
+    int y = yFromArgs(argv);
+    if(validate::input::widthHeightMinimum(x, y)) {
+        return 1;
+    }
 
-    // Dimensions dims{x, y};
+    Dimensions dims{x, y};
 
     if(validate::tests() == validate::Result::NOK)
     {
         return -1;
     }
-
-    Dimensions dims{16,16};
 
     MazeCreator mc(std::move(dims));
     mc.create();
