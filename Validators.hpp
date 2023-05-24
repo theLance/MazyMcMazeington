@@ -2,8 +2,8 @@
 
 #include <iosfwd>
 
-class Dimensions;
-class Maze;
+struct Dimensions;
+struct Maze;
 class MazeCreator;
 
 
